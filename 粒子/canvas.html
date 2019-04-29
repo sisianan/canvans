@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>canvas</title>
+   <style>
+   *{
+       margin: 0;
+       padding: 0;
+   }
+   #can{
+       background-image: url(粒子背景图.jpg); 
+   }
+   
+   
+   </style>
+</head>
+<body>
+    <canvas id="can" width="1000" height="600"></canvas>
+    <script>
+     var c = document.getElementById('can');
+     var context = c.getContext("2d");
+   
+     var timer1,
+         timer2;
+     var arr = [];
+     
+     
+      timer1 = setInterval(  function (){
+        var red = Math.floor(256*Math.random()),
+         green = Math.floor(256*Math.random()),
+         blue = Math.floor(256*Math.random()),
+         opa = 0.5 + Math.random()*0.5,
+         r = 10 + Math.ceil(Math.random()*10),
+         cx = 200 + Math.ceil(Math.random()*500),
+         cy = 200 + Math.ceil(Math.random()*300),
+         sx = -2 + Math.ceil(Math.random()*5);
+         sy = -2 + Math.ceil(Math.random()*5);
+
+         obj = {
+             bgr:"rgba(" + red + "," + green + "," + blue + "," + opa + ")",
+             r:r,
+             sx:sx,
+             sy:sy,
+             cx:cx,
+             cy:cy,
+         };
+         if(sx != 0 && sy != 0){
+           arr.push(obj);
+         }
+         if(arr.length == 40){
+             clearInterval(timer1);
+         }
+          
+       },1000/40)
+       
+        timer2 = setInterval(function(){
+      
+     
+            context.clearRect(0, 0, 1000, 600);
+            
+            // context.font="30px Verdana";
+            // context.fillText("严安，刘亚坤，你们好！", 450, 300);
+           
+             arr.forEach(function(ele,index){
+                 context.beginPath();
+                 
+                 
+                 context.arc(ele.cx, ele.cy, ele.r, 0, 2*Math.PI);
+                 context.fill();
+                 context.fillStyle= ele.bgr;
+                 context.strokeStyle= ele.bgr;
+                
+                 
+                 context.stroke();
+                
+                 if(ele.cx + ele.r >= 1000 || ele.cx - ele.r <= 0){
+                     ele.sx *= -1;
+                   };
+                 if(ele.cy - ele.r <= 0 || ele.cy + ele.r >= 600){
+                     ele.sy *= -1;
+               
+                 }
+                 ele.cx += ele.sx;
+                 ele.cy += ele.sy;
+                
+                 
+             });
+        
+        
+
+             
+        },1000/80)
+     
+    </script>
+</body>
+</html>
