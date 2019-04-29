@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+    #my{
+        background-color: #fff;    
+    }
+    
+    </style>
+</head>
+<body>
+    <canvas id="my"></canvas>
+    <script>
+        (function (){
+            var canvas = document.getElementById('my');
+            var context = canvas.getContext('2d');
+            var img = document.createElement('img');
+            var imgw = 800;
+            var imgh = 500;
+            var index = 0;
+            var focallength = 250;
+            //焦距
+            var particle_arr = [];
+            var init = function(){
+                canvas.width = document.documentElement.clientWidth;
+                canvas.height = document.documentElement.clientHeight;
+                bindEvent();
+                img.src = 'one.jpg';
+              
+            };
+            var bindEvent = function(){
+                            
+                    img.addEventListener('load',function(){
+         context.drawImage(img, (canvas.width - imgw)/2, (canvas.height - imgh)/2, imgw, imgh);
+         var imgArr = context.getImageData((canvas.width - imgw)/2, (canvas.height - imgh)/2, imgw, imgh);
+                    pushParticel(imgArr.data);
+                    console.log(particle_arr)
+                                      })
+                    };
+                  canvas.addEventListener('click',function(){
+                     context.clearRect(0, 0, canvas.width, canvas.height);          
+                    if(index >= 39){
+                    initial_move();
+                    }else if(index <= 1){
+                    disperse_move();
+                    } 
+                              });
+     function Particle(w,h,r,g,b){
+       this.w_initial = w;
+       this.h_initial = h;
+       this.w_disperse = Math.random()*canvas.width;
+       this.h_disperse = Math.random()*canvas.height;
+       this.z_initial= 0;
+       this.z_disperse = Math.random()*focallength*2 - focallength;
+       this.a = focallength/(focallength + this.z_initial);
+       //透明度
+       this.w_initial_clone = w;
+       this.h_initial_clone = h;
+       this.z_initial_clone = 0;
+       this.color = "rgba("+ r +","+ g +","+ b +","+ this.a +")";
+       this.disperse = function(){
+           this.disperse_change(); 
+       }
+       this.disperse_change = function(){
+        this.w_initial -= (this.w_initial - this.w_disperse) /4;
+        this.h_initial -= (this.h_initial - this.h_disperse) /4;
+        this.z_initial -= (this.z_initial - this.z_disperse) /4;
+}
+       this.draw = function(){
+           context.beginPath();
+           var scale = focallength/(focallength + this.z_initial);
+           context.fillStyle= this.color;
+           context.arc(canvas.width/2 + (this.w_initial-canvas.width/2)*scale , canvas.height/2 + (this.h_initial-canvas.height/2) * scale, 2*2*scale , 0 , 2*Math.PI);
+           context.fill();
+           context.closePath();   
+       };
+       this.initial = function(){
+           this.initial_change();
+       }
+       this.initial_change = function(){
+        
+                this.w_initial -= (this.w_initial - this.w_initial_clone) /2;
+                this.h_initial -= (this.h_initial - this.h_initial_clone) /2;
+                this.z_initial -= (this.z_initial - this.z_initial_clone) /2;
+            }
+       
+    };      
+  function pushParticel(arr){ 
+      console.log(arr);
+    for(let i = 0;i < imgh;i += 8){
+            let c = i*imgw*4;
+        for(let j = 0;j < imgw;j += 8){
+            
+               var r = arr[c + j*4];
+               var g = arr[c + j*4 + 1];
+               var b = arr[c + j*4 + 2];
+               var w = 0.5*2*j + 0.5*8 + (canvas.width - imgw)/2;
+               var h = 0.5*2*i + 0.5*8 + (canvas.height - imgh)/2;
+             //0.5为一个的粒子半径
+              particle_arr.push(new Particle(w,h,r,g,b));        
+        }
+    }
+};
+  function disperse_move(){     
+     context.clearRect(0, 0,canvas.width, canvas.height);   
+     for(var i = 0;i < particle_arr.length;i++){
+         particle_arr[i].disperse_change();
+         particle_arr[i].draw();     
+     }
+     setTimeout(function(){   
+            index++;
+         if(index == 40){
+             return false;
+         }
+         disperse_move();
+     },20)
+ };
+ function initial_move(){
+     context.clearRect(0, 0,canvas.width, canvas.height);    
+     for(var i = 0;i < particle_arr.length;i++){
+         particle_arr[i].initial_change();
+         particle_arr[i].draw(); 
+     }
+       setTimeout(function(){
+           index--;
+           if(index == 0){
+             return false;
+           }
+           initial_move();     
+       },20)
+ }
+ 
+init();
+        })()
+  
+    
+ 
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+    #my{
+        background-image: url(wheel3.jpg);
+        background-size: 100% 100%;
+    }
+    
+    
+    
+    
+    </style>
+</head>
+<body>
+    <canvas id="my" width="700" height="500"></canvas>
+    <script>
+    var canvas = document.getElementById('my');
+    var ctx = canvas.getContext('2d');
+    var img = document.createElement('img');
+    img.addEventListener('load',function(){
+          ctx.drawImage(img,0,0,canvas.width,canvas.height);
+
+    })
+    img.src = '123.png';
+    canvas.onclick = function(e){
+          var w = e.offsetX;
+          var h = e.offsetY;
+          var r = 5;
+          ctx.globalCompositeOperation = 'destination-out';
+          draw(w,h,r);
+    }
+    function draw(w,h,r){
+        console.log(w,h,r);
+        if(r >= 1000){
+            return;
+        }
+        ctx.globalAlpha=0.6;
+        
+        ctx.beginPath();
+        ctx.arc(w,h,r,0,2*Math.PI);
+        
+        ctx.fill();
+        ctx.closePath();
+        r += 2;
+       
+        requestAnimationFrame(function(){
+           
+            draw(w,h,r);
+        });
+        
+    }
+    
+    
+    
+    
+    
+    </script>
+</body>
+</html>

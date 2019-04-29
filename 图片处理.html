@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <style>
+    *{
+        color: rgb(255, 255, 255);
+    }
+    
+    </style>
+</head>
+<body>
+  
+    <canvas id="my" width="700" height="500"></canvas>
+    <button class="btn1">反片</button>
+    <button class="btn2">黑白</button>
+    <button class="btn3">版画</button>
+    <button class="btn4">原图</button>
+    <script>
+    var canvas = document.getElementById('my');
+    var ctx = canvas.getContext('2d');
+    var btn1 = document.getElementsByClassName('btn1')[0];
+    var btn2 = document.getElementsByClassName('btn2')[0];
+    var btn3 = document.getElementsByClassName('btn3')[0];
+    var btn4 = document.getElementsByClassName('btn4')[0];
+    btn1.onclick = function(){
+         change('one');
+    }
+    btn2.onclick = function(){
+        change('two');
+    }
+    btn3.onclick = function(){
+        change('three');
+    }
+    btn4.onclick = function(){
+        change('four');
+    }
+    function change(some){
+        ctx.clearRect(0,0,canvas.width,canvas.height);
+        var img = new Image();
+        img.addEventListener('load',function(){
+            
+            ctx.drawImage(img,0,0,canvas.width,canvas.height);
+            var imgData = ctx.getImageData(0,0,canvas.width,canvas.height);
+            
+            var len = imgData.data.length;
+            if(some == 'one'){
+                one(imgData,len);
+            }else if(some == 'two'){
+                two(imgData,len);
+            }else if(some == 'three'){
+                three(imgData,len);
+            }else if(some == 'four'){
+                four(imgData,len);
+            }
+        });
+        img.src = 'wheel3.jpg';
+    }
+    function one(imgData,len){
+        for(var i = 0;i <len;i += 4){
+            imgData.data[i] = 255 - imgData.data[i];
+            imgData.data[i + 1] = 255 - imgData.data[i + 1];
+            imgData.data[i + 2] = 255 - imgData.data[i + 2];
+         
+        }
+        ctx.putImageData(imgData,0,0);
+        var url = canvas.toDataURL();
+        var img = document.createElement('img');
+        // a.download = 'myphoto';
+        img.src = url;
+        var event = new MouseEvent('click');
+        // var b = a.dispatchEvent(event);
+        document.body.appendChild(img);
+        
+    }
+    function two(imgData,len){
+        for(var i = 0;i < len;i += 4){
+            var red = imgData.data[i];
+            var green = imgData.data[i + 1];
+            var blue = imgData.data[i + 2];
+            var middle = red*0.3 + green*0.59 + blue*0.11;
+            imgData.data[i] = middle;
+            imgData.data[i + 1] = middle;
+            imgData[i + 2] = middle;
+        }
+        ctx.putImageData(imgData,0,0);
+      
+
+    }
+    function three(imgData,len){
+        var color;
+           for(var i = 0;i < len;i += 4){
+            var red = imgData.data[i];
+            var green = imgData.data[i + 1];
+            var blue = imgData.data[i + 2];
+            var middle = red*0.3 + green*0.59 + blue*0.11;
+            if(middle >= 150){
+                color = 255;
+            }else{
+                color = 0 ;
+            }
+            imgData.data[i] = color;
+            imgData.data[i + 1] = color;
+            imgData[i + 2] = color;
+           }
+           ctx.putImageData(imgData,0,0);
+    }
+    function four(imgData,len){
+           
+    }
+    </script>
+</body>
+</html>
